@@ -3,6 +3,12 @@ import sys
 from selenium import webdriver
 from PIL import Image
 
+from selenium.webdriver.chrome.options import Options
+
+options = Options()
+options.headless = True
+
+
 if __name__ == "__main__":
     if(len(sys.argv) <= 2):
         print("Syntax : python3 generate.py <website_url> <filename>")
@@ -14,9 +20,10 @@ if __name__ == "__main__":
     preview_file_name = sys.argv[2] + "_preview.png"
 
     DRIVER = 'chromedriver'
-    driver = webdriver.Chrome(DRIVER)
+    driver = webdriver.Chrome(DRIVER, chrome_options=options)
 
-    dx, dy = driver.execute_script("var w=window; return [w.outerWidth - w.innerWidth, w.outerHeight - w.innerHeight];")
+    dx, dy = driver.execute_script(
+        "var w=window; return [w.outerWidth - w.innerWidth, w.outerHeight - w.innerHeight];")
     driver.set_window_size(1920 + dx, 1080 + dy)
 
     driver.get(website_url)
@@ -39,7 +46,9 @@ if __name__ == "__main__":
     screenshot.thumbnail(size, Image.ANTIALIAS)
 
     # Crop the screenshot
-    screenshot_crop = screenshot.crop((0, 0, frame_screenshot_width, frame_screenshot_height))
+    screenshot_crop = screenshot.crop(
+        (0, 0, frame_screenshot_width, frame_screenshot_height))
 
     frame.paste(screenshot_crop, (30, 37))
     frame.save(preview_file_name)
+
